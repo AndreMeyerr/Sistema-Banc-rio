@@ -370,4 +370,4 @@ def verificar_login(cpf, password):
         messagebox.showerror("Erro", "CPF ou senha incorretos.")
 
 
-verificar_login("66495768168","familia281074",)
+#verificar_login("66495768168","familia281074",)

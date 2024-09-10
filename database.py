@@ -191,4 +191,39 @@ def obter_saldo_db(numero_conta):
     conn.close()
     return saldo
 
+def limpar_tabelas():
+    conn = conectar()
+    cursor = conn.cursor()
+    
+    try:
+        # Deleta os dados das tabelas Customers, Contas e Transacoes
+        cursor.execute("DELETE FROM Transacoes")
+        cursor.execute("DELETE FROM Contas")
+        cursor.execute("DELETE FROM Customers")
+        conn.commit()
+        print("Dados das tabelas limpos com sucesso!")
+    except sqlite3.Error as e:
+        print(f"Erro ao limpar tabelas: {e}")
+    finally:
+        conn.close()
+
+# Executa a função para limpar os dados das tabelas
+
+def ver_estrutura_tabela(nome_tabela):
+    conn = conectar()
+    cursor = conn.cursor()
+    
+    try:
+        # Ver a estrutura da tabela
+        cursor.execute(f"PRAGMA table_info({nome_tabela})")
+        colunas = cursor.fetchall()
+        
+        print(f"Estrutura da tabela {nome_tabela}:")
+        for coluna in colunas:
+            print(coluna)
+    except sqlite3.Error as e:
+        print(f"Erro ao consultar a estrutura da tabela {nome_tabela}: {e}")
+    finally:
+        conn.close()
+
 checar_database()

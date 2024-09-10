@@ -88,6 +88,28 @@ class Application():
         else:
             messagebox.showerror(title="Erro", message="Nome de usuário ou senha incorretos.")
 
+    def formatar_data_nascimento(self, event):
+    # Pega o conteúdo atual da entrada
+        text = self.data_nascimento_entry.get()
+
+        # Remove qualquer caractere que não seja número
+        text = ''.join([char for char in text if char.isdigit()])
+
+        # Formata automaticamente a data quando o comprimento é suficiente
+        if len(text) >= 2 and len(text) <= 4:
+            text = text[:2] + '/' + text[2:]
+        elif len(text) > 4:
+            text = text[:2] + '/' + text[2:4] + '/' + text[4:8]
+        
+        # Atualiza o conteúdo da entry
+        self.data_nascimento_entry.delete(0, 'end')
+        self.data_nascimento_entry.insert(0, text)
+
+        # Limita o tamanho a 10 caracteres (dd/mm/yyyy)
+        if len(text) > 10:
+            self.data_nascimento_entry.delete(10, 'end')
+
+
 
     def tela_register(self):
         # Remover o frame de Login e adicionando frame de Registro
@@ -109,6 +131,7 @@ class Application():
         self.data_nascimento_entry = ctk.CTkEntry(master=self.rg_frame, placeholder_text="Data de Nascimento: (dd/mm/yyyy)",
                                         width=300, font=("Roboto", 14))
         self.data_nascimento_entry.place(x=25, y=115)
+        self.data_nascimento_entry.bind("<KeyRelease>", self.formatar_data_nascimento)
 
         self.email_entry = ctk.CTkEntry(master=self.rg_frame, placeholder_text="Email de Usuário: ",
                                     width=300, font=("Roboto", 14))
@@ -208,7 +231,7 @@ class Application():
 
     def back_to_login(self):
         self.rg_frame.pack_forget()
-        self.login_frame.pack(side=RIGHT)
+        self.tela_login()
 
 
 
