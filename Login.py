@@ -218,12 +218,11 @@ class Application():
         if not self.is_valid_password(password):
             messagebox.showerror(title="Erro", message="A senha deve ter pelo menos 8 caracteres, incluindo letras, números e caracteres especiais.")
             return
-        
-        
-        
+
         # Cadastra o usuário se todas as validações passarem
         if cadastrar_usuario(name, cpf, age, email, password):
             messagebox.showinfo(title="Situação Cadastro", message='Parabéns! Usuário Cadastrado Com Sucesso!')
+            self.back_to_login()
         else:
             messagebox.showerror(title="Erro", message="Erro ao cadastrar. Verifique as informações.")
 

@@ -70,11 +70,14 @@ def cadastrar_usuario(name, cpf, idade, email, password):
         # Confirmar transação
         conn.commit()
         print(f"Usuário {name} cadastrado com sucesso! Número da conta: {numero_conta}")
+        return True  # Retorna True se o cadastro foi bem-sucedido
     except sqlite3.Error as e:
         conn.rollback()
         print(f"Erro ao cadastrar usuário: {e}")
+        return False  # Retorna False se houve algum erro
     finally:
         conn.close()
+
 
 
 def verificar_login_nome_saldo_conta(cpf, password):
@@ -154,7 +157,7 @@ def checar_database():
     
     try:
         # Executa a consulta para selecionar todos os registros
-        cursor.execute('SELECT * FROM Customers')
+        cursor.execute('SELECT * FROM Contas')
         consulta = cursor.fetchall()
         
         # Imprime os registros
