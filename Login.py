@@ -4,6 +4,7 @@ from tkinter import messagebox
 from database import cadastrar_usuario, verificar_login_nome_saldo_conta
 import re
 from datetime import datetime
+from PIL import Image,ImageTk  
 
 class Application():
     def __init__(self):
@@ -23,10 +24,19 @@ class Application():
         self.janela.resizable(False, False)
 
     def tela_login(self):
-        # Trabalhando com a Imagem
-        self.img = PhotoImage(file="Imagem Teste.png")
-        Label_img = ctk.CTkLabel(master=self.janela, image=self.img, text=None)
-        Label_img.place(x=-30, y=65)
+        # Carregar e redimensionar a imagem usando PIL
+        try:
+            imagem_original = Image.open("Imagem Teste.png")  # Substitua pelo caminho correto da imagem
+            imagem_redimensionada = imagem_original.resize((450, 350))  # Redimensione para o tamanho desejado
+
+            # Criar um objeto PhotoImage com a imagem redimensionada
+            self.img = ImageTk.PhotoImage(imagem_redimensionada)
+            
+            # Exibir a imagem
+            Label_img = ctk.CTkLabel(master=self.janela, image=self.img, text=None)
+            Label_img.place(x=0, y=55)  # Ajuste a posição conforme necessário
+        except Exception as e:
+            print(f"Erro ao carregar a imagem: {e}")
 
         label_tt = ctk.CTkLabel(master=self.janela, text="Faça o Login para ter Acesso a Sua Conta!",
                                 font=("Roboto", 18), text_color="#00B0F0")
