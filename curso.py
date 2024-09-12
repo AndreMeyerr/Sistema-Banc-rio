@@ -73,17 +73,18 @@ class Conta:
         extrato_str += f"Saldo atual: R${self.saldo:.2f}"
         
         return extrato_str
-
-
     
-    
-# Classe Sistema utilizando tkinter e interagindo com o banco de dados
-class Sistema:
-    def __init__(self, nome, saldo, numero_conta,email,cpf,password):
+class pessoa:
+    def __init__(self,nome,email,cpf):
         self.nome = nome
-        self.saldo = saldo
         self.email = email
         self.cpf = cpf
+
+
+class Sistema(pessoa):
+    def __init__(self, nome, saldo, numero_conta, email, cpf, password):
+        super().__init__(nome,email,cpf)
+        self.saldo = saldo
         self.password = password  
         self.conta = Conta(numero=numero_conta, saldo=saldo, titular=nome)
         self.janela = ctk.CTk()
@@ -125,35 +126,48 @@ class Sistema:
         label_balance.place(x=160, y=72)
 
 
+
+    
     def tela_inicio(self):
         self.frame_inicio = ctk.CTkFrame(master=self.janela, width=700, height=350)
-        self.frame_inicio.pack(side=BOTTOM)
-            
+        self.frame_inicio.pack(side=ctk.BOTTOM)
+
+        # Botões de navegação
         btn_inicio = ctk.CTkButton(master=self.frame_inicio, text='INÍCIO',
-                                        fg_color="transparent",font=("Times New Roman", 20))
+                                fg_color="#7BB4E3", font=("Times New Roman", 20))
         btn_inicio.place(x=50, y=20)
 
         btn_invest = ctk.CTkButton(master=self.frame_inicio, text='INVESTIMENTOS',
-                                        fg_color="transparent",font=("Times New Roman", 20))
+                                fg_color="#004B57", font=("Times New Roman", 20))
         btn_invest.place(x=240, y=20)
 
         btn_conta = ctk.CTkButton(master=self.frame_inicio, text='MINHA CONTA',
-                                        fg_color="transparent",font=("Times New Roman", 20),
-                                        command=self.tela_conta)
+                                fg_color="#004B57", font=("Times New Roman", 20),
+                                command=self.tela_conta)
         btn_conta.place(x=450, y=20)
 
+        def criar_card(container, cor_fundo, cor_borda, titulo, x, y, comando_botao, descricao, texto_botao):
+            card_frame = ctk.CTkFrame(container, fg_color=cor_fundo, corner_radius=15, border_width=4, border_color=cor_borda, width=500, height=270)  # Aumentei a largura para 320
+            card_frame.place(x=x, y=y)  # Posicionamento fixo
 
-        btn_deposit = ctk.CTkButton(master=self.frame_inicio, text='DEPOSITAR',font=("Times New Roman", 20),
-                                        command=self.depositar)
-        btn_deposit.place(x=100, y=120)
+            # Rótulo para a explicação
+            titulo_label = ctk.CTkLabel(card_frame, text=titulo, font=("Arial", 16),fg_color='transparent', text_color="white", wraplength=260,anchor='center', justify="center")
+            titulo_label.pack(pady=(10, 5))
 
-        btn_sacar = ctk.CTkButton(master=self.frame_inicio,font=("Times New Roman", 20), text='SACAR', command=self.sacar)
-        btn_sacar.place(x=100, y=180)
+            # Rótulo para a descrição detalhada
+            descricao_label = ctk.CTkLabel(card_frame, text=descricao, font=("Arial", 12), text_color="white", wraplength=260, justify="center")
+            descricao_label.pack(pady=(0, 10))
 
-        btn_extrato = ctk.CTkButton(master=self.frame_inicio, text='EXTRATO',font=("Times New Roman", 20),
-                                        command=self.mostrar_extrato)
-        btn_extrato.place(x=100, y=240)
+            # Criação do botão dentro do card
+            botao = ctk.CTkButton(card_frame, text=texto_botao, font=("Times New Roman", 16), command=comando_botao, fg_color='#00A2E8', hover_color='#0056b3', corner_radius=10)
+            botao.pack(pady=(5, 10))
 
+            return card_frame
+
+        # Ajustando o posicionamento dos cards ao longo do eixo X
+        card1 = criar_card(self.frame_inicio, '#333333', '#00569D', 'Realize um depósito na sua conta.', x=20, y=120, comando_botao=self.depositar, descricao='Deposite dinheiro na sua conta para\n aumentar o saldo disponível.', texto_botao='DEPOSITAR')
+        card2 = criar_card(self.frame_inicio, '#333333', '#00569D', 'Faça um saque na sua Conta.', x=275, y=120, comando_botao=self.sacar, descricao='Retire dinheiro da sua conta,\n reduzindo o saldo atual.', texto_botao='SACAR')
+        card3 = criar_card(self.frame_inicio, '#333333', '#00569D', 'Consulte o seu extrato de transações.', x=500, y=120, comando_botao=self.mostrar_extrato, descricao='Visualize todas as transações\n realizadas na sua conta.', texto_botao='EXTRATO')
 
     def depositar(self):
         valor = simpledialog.askfloat("Depósito", "Informe o valor a depositar:")
@@ -175,7 +189,6 @@ class Sistema:
         extrato = self.conta.obter_extrato_transacoes()
         messagebox.showinfo("Extrato", extrato)
 
-
     def atualizar_saldo(self):
         for widget in self.janela.winfo_children():
             widget.destroy()
@@ -191,17 +204,17 @@ class Sistema:
 
         # Botão para voltar ao início
         btn_inicio = ctk.CTkButton(master=self.conta_frame, text='INÍCIO',
-                                    fg_color="transparent", font=("Times New Roman", 20),
+                                    fg_color="#004B57", font=("Times New Roman", 20),
                                     command=self.back_to_inicio)
         btn_inicio.place(x=50, y=20)
 
         # Botões da nova tela
         btn_invest = ctk.CTkButton(master=self.conta_frame, text='INVESTIMENTOS',
-                                    fg_color="transparent", font=("Times New Roman", 20))
+                                    fg_color="#004B57", font=("Times New Roman", 20))
         btn_invest.place(x=240, y=20)
 
         btn_conta = ctk.CTkButton(master=self.conta_frame, text='MINHA CONTA',
-                                    fg_color="transparent", font=("Times New Roman", 20))
+                                    fg_color="#7BB4E3", font=("Times New Roman", 20))
         btn_conta.place(x=450, y=20)
 
         # Exibir dados da conta como exemplo
@@ -221,10 +234,6 @@ class Sistema:
         label_account = ctk.CTkLabel(master=self.conta_frame, text=f"Conta: {self.conta.numero}",
                                     font=("Times New Roman", 20), text_color="#00B0F0")
         label_account.place(x=50, y=200)
-
-        label_balance = ctk.CTkLabel(master=self.conta_frame, text=f"Saldo: R$ {self.conta.saldo:.2f}",
-                                    font=("Times New Roman", 20), text_color="#00B0F0")
-        label_balance.place(x=50, y=240)
 
         dim_password = len(self.password)
         
@@ -256,54 +265,69 @@ class Sistema:
         
     
     def excluir_usuario(self, cpf):
-        conn = conectar()
-        cursor = conn.cursor()
-        
         try:
-            # Comando SQL para excluir o registro onde o CPF corresponde
-            cursor.execute("DELETE FROM Customers WHERE CPF = ?", (cpf))  # Corrigido para passar como tupla
-            conn.commit()
-            print(f"Usuário com CPF {cpf} foi excluído.")
+            with conectar() as conn:
+                cursor = conn.cursor()
+                
+                # Excluir todas as transações associadas ao usuário
+                cursor.execute("DELETE FROM Transacoes WHERE numero_conta IN (SELECT NumberAccount FROM Contas WHERE CPF = ?)", (cpf,))
+                
+                # Excluir todas as contas associadas ao usuário
+                cursor.execute("DELETE FROM Contas WHERE CPF = ?", (cpf,))
+                
+                # Excluir o próprio usuário
+                cursor.execute("DELETE FROM Customers WHERE CPF = ?", (cpf,))
+                
+                conn.commit()
+                print(f"Usuário com CPF {cpf} foi excluído.")
         except sqlite3.Error as e:
             print(f"Erro ao excluir usuário: {e}")
-        finally:
-            conn.close()
+            messagebox.showerror("Erro", f"Não foi possível excluir o usuário: {e}")
+
 
     def del_acc(self, cpf):
-        cpf = self.cpf
         if self.saldo > 0:
             resposta = messagebox.askyesno("Aviso", "A conta ainda possui saldo. Você tem certeza que deseja excluí-la?")
             if resposta:
                 self.excluir_usuario(cpf)  # Chama a função de exclusão
                 messagebox.showinfo("Sucesso", "Conta excluída com sucesso.")
+                self.janela.destroy()  # Fecha a janela atual
+                self.voltar_para_login()
             else:
                 messagebox.showinfo("Cancelado", "A exclusão da conta foi cancelada.")
         else:
             self.excluir_usuario(cpf)  # Exclui se não houver saldo
             messagebox.showinfo("Sucesso", "Conta excluída com sucesso.")
+            self.janela.destroy()  # Fecha a janela atual
+            self.voltar_para_login()
+            
+    def voltar_para_login(self):
+        from Login import Application
+        Application()
 
 
     def escolher_dado_atualizar(self):
         # Criar uma nova janela (janela de diálogo)
         janela_atualizacao = Toplevel(self.janela)
         janela_atualizacao.title("Atualizar Dados")
-        janela_atualizacao.geometry("300x150")
+        janela_atualizacao.geometry("400x250")  # Aumenta o tamanho da janela
         
         # Label explicativa
-        label = ctk.CTkLabel(master=janela_atualizacao, text="Escolha o dado que deseja atualizar:")
-        label.pack(pady=10)
+        label = ctk.CTkLabel(master=janela_atualizacao, text="Escolha o dado que deseja atualizar:",
+                            font=("Arial", 14), text_color='black')  # Aumenta o tamanho da fonte
+        label.pack(pady=20)  # Aumenta o espaçamento vertical para 20
 
-        # Criação da Combobox
+        # Criação da Combobox com tamanho de fonte ajustado
         self.opcao_atualizacao = StringVar()
         combobox = ttk.Combobox(janela_atualizacao, textvariable=self.opcao_atualizacao, 
-                                values=["Nome", "E-mail", "Senha"], state="readonly")
+                                values=["Nome", "E-mail", "Senha"], state="readonly", font=("Arial", 12))  # Define o tamanho da fonte
         combobox.set("Selecione uma opção")  # Placeholder padrão
-        combobox.pack(pady=10)
+        combobox.pack(pady=20, padx=10, ipadx=10, ipady=5)  # Aumenta o espaçamento e o preenchimento
 
         # Botão para confirmar a escolha
         confirmar_button = ctk.CTkButton(master=janela_atualizacao, text="Confirmar", 
                                         command=lambda: self.confirmar_atualizacao(janela_atualizacao))
-        confirmar_button.pack(pady=10)
+        confirmar_button.pack(pady=20)  # Aumenta o espaçamento vertical para 20
 
     def confirmar_atualizacao(self, janela_atualizacao):
         opcao = self.opcao_atualizacao.get().lower()
@@ -320,6 +344,7 @@ class Sistema:
                 messagebox.showerror("Erro", "Nenhum valor foi informado.")
         else:
             messagebox.showerror("Erro", "Dado inválido. Escolha entre Nome, E-mail, CPF ou Senha.")
+
 
 
     def atualizar_dado(self, campo, valor):
@@ -345,7 +370,6 @@ class Sistema:
 
 
 
-
     def back_to_inicio(self):
         self.conta_frame.pack_forget()
         self.frame_inicio.pack(side=BOTTOM)
@@ -353,21 +377,24 @@ class Sistema:
 
 # Função para verificar o login e iniciar o sistema
 def verificar_login(cpf, password):
-    conn = conectar()
-    cursor = conn.cursor()
-    cursor.execute("""SELECT ct.Name, C.Balance,C.NumberAccount,ct.Email,ct.CPF,ct.Password
-                      FROM Customers ct
-                      JOIN Contas C ON ct.CPF = C.CPF
-                      WHERE ct.CPF = ? AND ct.Password = ?;""", (cpf, password))
-    resultado = cursor.fetchone()
-    conn.close()
+    try:
+        with conectar() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""SELECT ct.Name, C.Balance,C.NumberAccount,ct.Email,ct.CPF,ct.Password
+                              FROM Customers ct
+                              JOIN Contas C ON ct.CPF = C.CPF
+                              WHERE ct.CPF = ? AND ct.Password = ?;""", (cpf, password))
+            resultado = cursor.fetchone()
+    except sqlite3.Error as e:
+        messagebox.showerror("Erro", f"Erro ao verificar login: {e}")
+        return
 
     if resultado:
         nome, saldo, numero_conta, email, cpf, password = resultado
-        Sistema(nome=nome, saldo=saldo, numero_conta=numero_conta,email=email,cpf=cpf,password=password)
-
+        Sistema(nome=nome, saldo=saldo, numero_conta=numero_conta, email=email, cpf=cpf, password=password)
     else:
         messagebox.showerror("Erro", "CPF ou senha incorretos.")
 
 
-#verificar_login("66495768168","familia281074",)
+
+#verificar_login("03868304100","fama1234",)
