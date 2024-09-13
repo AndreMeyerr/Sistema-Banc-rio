@@ -26,25 +26,26 @@ class Application():
     def tela_login(self):
         # Carregar e redimensionar a imagem usando PIL
         try:
-            imagem_original = Image.open("Imagem Teste 1.png")  # Substitua pelo caminho correto da imagem
-            imagem_redimensionada = imagem_original.resize((450, 380))  # Redimensione para o tamanho desejado
+            imagem_original = Image.open("Imagem Teste 1.png")
+            imagem_redimensionada = imagem_original.resize((350, 380))
 
-            # Criar um objeto PhotoImage com a imagem redimensionada
+           
             self.img = ImageTk.PhotoImage(imagem_redimensionada)
             
-            # Exibir a imagem
+            
             Label_img = ctk.CTkLabel(master=self.janela, image=self.img, text=None)
-            Label_img.place(x=-10, y=55)  # Ajuste a posição conforme necessário
+            Label_img.pack(side='left', fill='y')
         except Exception as e:
             print(f"Erro ao carregar a imagem: {e}")
 
-        label_tt = ctk.CTkLabel(master=self.janela, text="Faça o Login para ter Acesso a Sua Conta!",
-                                font=("Roboto", 18), text_color="#00B0F0")
-        label_tt.place(x=10, y=60)
 
         # Login frame
         self.login_frame = ctk.CTkFrame(master=self.janela, width=350, height=396)
-        self.login_frame.pack(side=RIGHT)
+        self.login_frame.pack(side=RIGHT,fill='y')
+
+        label_tt = ctk.CTkLabel(master=self.login_frame, text="Faça o Login para ter Acesso a Sua Conta!",
+                                font=("Roboto", 17), text_color="#00B0F0")
+        label_tt.place(x=20, y=60)
 
         # Frame widgets
         label = ctk.CTkLabel(master=self.login_frame, text="Sistema de Login", font=("Roboto", 30))
@@ -174,8 +175,7 @@ class Application():
         return re.match(regex, email) is not None
 
     def is_valid_cpf(self, cpf):
-        # Implementa a lógica de validação de CPF (apenas um exemplo simples)
-        # A validação de CPF completa é mais complexa, considerando dígitos verificadores
+        # Validação de CPF
         if len(cpf) != 11 or not cpf.isdigit():
             return False
         return True

@@ -156,13 +156,13 @@ class Sistema(pessoa):
         self.janela.resizable(False, False)
 
     def tela_app(self):
-        label_name = ctk.CTkLabel(master=self.janela, text=f"SEJA BEM-VINDO {self.nome}!",
+        label_name = ctk.CTkLabel(master=self.janela, text=f"SEJA BEM-VINDO {self.nome.upper()}!",
                                   font=("Times New Roman", 20), text_color="#00B0F0")
         label_name.place(x=10, y=40)
 
         label_account = ctk.CTkLabel(master=self.janela, text=f"Conta: {self.conta.numero}",
                                      font=("Times New Roman", 20), text_color="#00B0F0")
-        label_account.place(x=500, y=40)
+        label_account.place(x=400, y=80)
 
         label_balance_title = ctk.CTkLabel(master=self.janela, text="SALDO ATUAL",
                                            font=("Times New Roman", 20), text_color="#00B0F0")
@@ -203,29 +203,53 @@ class Sistema(pessoa):
 
 
 
-        def criar_card(container, cor_fundo, cor_borda, titulo, x, y, comando_botao, descricao, texto_botao):
-            card_frame = ctk.CTkFrame(container, fg_color=cor_fundo, corner_radius=15, border_width=4, border_color=cor_borda, width=500, height=270)  # Aumentei a largura para 320
-            card_frame.place(x=x, y=y)  # Posicionamento fixo
+        def criar_card(container, cor_fundo, cor_borda, titulo, comando_botao, descricao, texto_botao):
+            card_frame = ctk.CTkFrame(
+                container, fg_color=cor_fundo, corner_radius=15, border_width=2, 
+                border_color=cor_borda, width=300, height=200
+            )
+            
+            # Rótulo do Título com largura fixa
+            titulo_label = ctk.CTkLabel(
+                card_frame, text=titulo, font=("Arial", 14, "bold"), fg_color='transparent', 
+                text_color="white", wraplength=260, anchor='center', justify="center", width=260
+            )
+            titulo_label.place(relx=0.5, rely=0.2, anchor='center')  # Posicionamento relativo dentro do card
 
-            # Rótulo para a explicação
-            titulo_label = ctk.CTkLabel(card_frame, text=titulo, font=("Arial", 16),fg_color='transparent', text_color="white", wraplength=260,anchor='center', justify="center")
-            titulo_label.pack(pady=(10, 5))
+            # Rótulo de Descrição com largura fixa
+            descricao_label = ctk.CTkLabel(
+                card_frame, text=descricao, font=("Arial", 11), text_color="white", 
+                wraplength=260, justify="center", width=260
+            )
+            descricao_label.place(relx=0.5, rely=0.5, anchor='center')  # Posicionamento relativo dentro do card
 
-            # Rótulo para a descrição detalhada
-            descricao_label = ctk.CTkLabel(card_frame, text=descricao, font=("Arial", 12), text_color="white", wraplength=260, justify="center")
-            descricao_label.pack(pady=(0, 10))
-
-            # Criação do botão dentro do card
-            botao = ctk.CTkButton(card_frame, text=texto_botao, font=("Times New Roman", 16), command=comando_botao, fg_color='#00A2E8', hover_color='#0056b3', corner_radius=10)
-            botao.pack(pady=(5, 10))
+            # Botão ajustado para um estilo mais flat e responsivo
+            botao = ctk.CTkButton(
+                card_frame, text=texto_botao, font=("Arial", 12, "bold"), command=comando_botao, 
+                fg_color='#00A2E8', hover_color='#007ACC', corner_radius=8, text_color='white'
+            )
+            botao.place(relx=0.5, rely=0.8, anchor='center')  # Posicionamento relativo dentro do card
 
             return card_frame
 
-        # Ajustando o posicionamento dos cards ao longo do eixo X
-        card1 = criar_card(self.frame_inicio, '#333333', '#00569D', 'Realize um depósito na sua conta.', x=20, y=120, comando_botao=self.depositar, descricao='Deposite dinheiro na sua conta para\n aumentar o saldo disponível.', texto_botao='DEPOSITAR')
-        card2 = criar_card(self.frame_inicio, '#333333', '#00569D', 'Faça um saque na sua Conta.', x=275, y=120, comando_botao=self.sacar, descricao='Retire dinheiro da sua conta,\n reduzindo o saldo atual.', texto_botao='SACAR')
-        card3 = criar_card(self.frame_inicio, '#333333', '#00569D', 'Consulte o seu extrato de transações.', x=500, y=120, comando_botao=self.mostrar_extrato, descricao='Visualize todas as transações\n realizadas na sua conta.', texto_botao='EXTRATO')
 
+        # Criando frames específicos para cada card
+        frame_card1 = ctk.CTkFrame(self.frame_inicio, width=220, height=240, fg_color="transparent")
+        frame_card1.place(x=20, y=50)
+        card1 = criar_card(frame_card1, 'transparent', '#00569D', 'Realize um \n Depósito na sua conta.', comando_botao=self.depositar, descricao='Deposite dinheiro na sua conta para\n aumentar o saldo disponível.', texto_botao='DEPOSITAR')
+        card1.place(relx=0.5, rely=0.5, anchor='center')  # Posicionando o card dentro do frame
+        
+        
+        frame_card2 = ctk.CTkFrame(self.frame_inicio, width=220, height=240, fg_color="transparent")
+        frame_card2.place(x=225, y=50)
+        card2 = criar_card(frame_card2, 'transparent', '#00569D', 'Realize um\n saque na sua Conta.', comando_botao=self.sacar, descricao='Saque dinheiro da sua conta,\n reduzindo o saldo atual.', texto_botao='SACAR')
+        card2.place(relx=0.5, rely=0.5, anchor='center') 
+
+        frame_card3 = ctk.CTkFrame(self.frame_inicio, width=220, height=240, fg_color="transparent")
+        frame_card3.place(x=420, y=50)
+        card3 = criar_card(frame_card3, 'transparent', '#00569D', 'Consulte o seu\n Extrato \nde Transações.', comando_botao=self.mostrar_extrato, descricao='Visualize todas as transações\n realizadas na sua conta.', texto_botao='EXTRATO')
+        card3.place(relx=0.5, rely=0.5, anchor='center')
+    
     def depositar(self):
         valor = simpledialog.askfloat("Depósito", "Informe o valor a depositar:")
         if valor is not None:
