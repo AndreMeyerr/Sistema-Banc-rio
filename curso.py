@@ -51,6 +51,58 @@ class Conta:
             atualizar_saldo_db(self.numero, self.saldo)
             self.registrar_transacao('SAQUE', -valor)
             return f'Saque de R${valor:.2f} realizado com sucesso! Saldo atual: R${self.saldo:.2f}'
+    def transferir(self, numero_conta_destino, valor):
+        # Converte o valor para float e verifica se é válido
+        try:
+            valor = float(valor)
+            if valor <= 0:
+                return "Valor de transferência inválido."
+        except ValueError:
+            return "Valor de transferência inválido."
+
+        # Verifica se há saldo suficiente para a transferência
+        if self.saldo < valor:
+            return "Saldo insuficiente para realizar a transferência."
+
+        # Verifica se a conta de destino existe
+        conn = conectar()
+        cursor = conn.cursor()
+        cursor.execute("SELECT Balance FROM Contas WHERE NumberAccount = ?", (numero_conta_destino,))
+        resultado = cursor.fetchone()
+
+        if not resultado:
+            conn.close()
+            return "Conta de destino não encontrada."
+
+        # Obtém o saldo da conta de destino
+        saldo_destino = resultado[0]
+
+        try:
+            # Atualiza o saldo da conta de origem
+            self.saldo -= valor
+            atualizar_saldo_db(self.numero, self.saldo)
+            self.registrar_transacao('TRANSFERÊNCIA ENVIADA', -valor)
+
+            # Atualiza o saldo da conta de destino
+            saldo_destino += valor
+            cursor.execute("UPDATE Contas SET Balance = ? WHERE NumberAccount = ?", (saldo_destino, numero_conta_destino))
+            conn.commit()
+
+            # Registra a transação na conta de destino
+            cursor.execute("""
+            INSERT INTO Transacoes (numero_conta, tipo, valor)
+            VALUES (?, 'TRANSFERÊNCIA RECEBIDA', ?)
+            """, (numero_conta_destino, valor))
+            conn.commit()
+
+            return f"Transferência de R${valor:.2f} para a conta {numero_conta_destino} realizada com sucesso!"
+
+        except sqlite3.Error as e:
+            return f"Erro ao realizar transferência: {e}"
+
+        finally:
+            conn.close()
+
         
     def obter_extrato_transacoes(self):
         conn = conectar()
@@ -127,6 +179,8 @@ class Sistema(pessoa):
 
 
 
+
+
     
     def tela_inicio(self):
         self.frame_inicio = ctk.CTkFrame(master=self.janela, width=700, height=350)
@@ -137,14 +191,17 @@ class Sistema(pessoa):
                                 fg_color="#7BB4E3", font=("Times New Roman", 20))
         btn_inicio.place(x=50, y=20)
 
-        btn_invest = ctk.CTkButton(master=self.frame_inicio, text='INVESTIMENTOS',
-                                fg_color="#004B57", font=("Times New Roman", 20))
-        btn_invest.place(x=240, y=20)
+        btn_transferir = ctk.CTkButton(master=self.frame_inicio, text='TRANSFERÊNCIA',
+                                    fg_color="#004B57", font=("Times New Roman", 20),
+                                    command=self.transferir)
+        btn_transferir.place(x=240, y=20) 
 
         btn_conta = ctk.CTkButton(master=self.frame_inicio, text='MINHA CONTA',
                                 fg_color="#004B57", font=("Times New Roman", 20),
                                 command=self.tela_conta)
-        btn_conta.place(x=450, y=20)
+        btn_conta.place(x=450, y=20)     
+
+
 
         def criar_card(container, cor_fundo, cor_borda, titulo, x, y, comando_botao, descricao, texto_botao):
             card_frame = ctk.CTkFrame(container, fg_color=cor_fundo, corner_radius=15, border_width=4, border_color=cor_borda, width=500, height=270)  # Aumentei a largura para 320
@@ -184,6 +241,45 @@ class Sistema(pessoa):
             messagebox.showinfo("Saque", msg)
             self.atualizar_saldo()
             self.tela_inicio()
+    def transferir(self):
+        # Criação de uma nova janela de diálogo
+        janela_transferencia = Toplevel(self.janela)
+        janela_transferencia.title("Transferência")
+        janela_transferencia.geometry("300x400")
+
+        # Label e entrada para o número da conta de destino
+        label_conta = ctk.CTkLabel(janela_transferencia, text_color='black', text="Número da Conta de Destino:", font=("Arial", 12))
+        label_conta.pack(pady=(20, 5))
+
+        entry_conta = ctk.CTkEntry(janela_transferencia, placeholder_text="Conta: ", font=("Roboto", 14), width=200)
+        entry_conta.pack(pady=(0, 10))
+
+        # Label e entrada para o valor de transferência
+        label_valor = ctk.CTkLabel(janela_transferencia, text_color='black', text="Valor da Transferência (R$):", font=("Arial", 12))
+        label_valor.pack(pady=(10, 5))
+
+        entry_valor = ctk.CTkEntry(janela_transferencia, placeholder_text="Valor R$: ", font=("Roboto", 14), width=200)
+        entry_valor.pack(pady=(0, 20))
+
+        # Função interna para capturar os dados de entrada e executar a transferência
+        def executar_transferencia():
+            numero_conta_destino = entry_conta.get()
+            valor_transferencia = entry_valor.get()
+
+            # Chama o método de transferência da classe Conta
+            resultado = self.conta.transferir(numero_conta_destino, valor_transferencia)
+            
+            # Exibe o resultado da operação
+            messagebox.showinfo("Resultado da Transferência", resultado)
+            
+            # Fecha a janela de transferência após o sucesso
+            janela_transferencia.destroy()
+            self.atualizar_saldo()
+            self.tela_inicio()
+
+        # Botão para confirmar a transferência
+        btn_confirmar = ctk.CTkButton(janela_transferencia, text="Confirmar", command=executar_transferencia)
+        btn_confirmar.pack(pady=10)
 
     def mostrar_extrato(self):
         extrato = self.conta.obter_extrato_transacoes()
@@ -208,10 +304,12 @@ class Sistema(pessoa):
                                     command=self.back_to_inicio)
         btn_inicio.place(x=50, y=20)
 
-        # Botões da nova tela
-        btn_invest = ctk.CTkButton(master=self.conta_frame, text='INVESTIMENTOS',
-                                    fg_color="#004B57", font=("Times New Roman", 20))
-        btn_invest.place(x=240, y=20)
+        btn_transferir = ctk.CTkButton(master=self.conta_frame, text='TRANSFERÊNCIA',
+                                    fg_color="#004B57", font=("Times New Roman", 20),
+                                    command=self.transferir)
+        btn_transferir.place(x=240, y=20) 
+        
+        
 
         btn_conta = ctk.CTkButton(master=self.conta_frame, text='MINHA CONTA',
                                     fg_color="#7BB4E3", font=("Times New Roman", 20))
@@ -397,4 +495,4 @@ def verificar_login(cpf, password):
 
 
 
-#verificar_login("03868304100","fama1234",)
+verificar_login("03868304100","fama1234",)

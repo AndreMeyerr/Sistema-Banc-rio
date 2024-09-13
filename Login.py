@@ -26,15 +26,15 @@ class Application():
     def tela_login(self):
         # Carregar e redimensionar a imagem usando PIL
         try:
-            imagem_original = Image.open("Imagem Teste.png")  # Substitua pelo caminho correto da imagem
-            imagem_redimensionada = imagem_original.resize((450, 350))  # Redimensione para o tamanho desejado
+            imagem_original = Image.open("Imagem Teste 1.png")  # Substitua pelo caminho correto da imagem
+            imagem_redimensionada = imagem_original.resize((450, 380))  # Redimensione para o tamanho desejado
 
             # Criar um objeto PhotoImage com a imagem redimensionada
             self.img = ImageTk.PhotoImage(imagem_redimensionada)
             
             # Exibir a imagem
             Label_img = ctk.CTkLabel(master=self.janela, image=self.img, text=None)
-            Label_img.place(x=0, y=55)  # Ajuste a posição conforme necessário
+            Label_img.place(x=-10, y=55)  # Ajuste a posição conforme necessário
         except Exception as e:
             print(f"Erro ao carregar a imagem: {e}")
 
