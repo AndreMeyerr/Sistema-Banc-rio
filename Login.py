@@ -92,7 +92,7 @@ class Application():
         if nome_saldo_conta_logado:
             messagebox.showinfo(title="Situação de Login", message='Login Feito com Sucesso!')
             self.janela.destroy()
-            from curso import Sistema
+            from app import Sistema
             Sistema(nome_saldo_conta_logado[0],nome_saldo_conta_logado[1],nome_saldo_conta_logado[2],nome_saldo_conta_logado[3],nome_saldo_conta_logado[4],nome_saldo_conta_logado[5])  # Inicia o sistema passando o nome e saldo do usuário
   
               

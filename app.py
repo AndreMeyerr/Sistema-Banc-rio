@@ -157,23 +157,23 @@ class Sistema(pessoa):
 
     def tela_app(self):
         label_name = ctk.CTkLabel(master=self.janela, text=f"SEJA BEM-VINDO {self.nome.upper()}!",
-                                  font=("Times New Roman", 20), text_color="#00B0F0")
+                                  font=("ARIAL", 20,"bold"), text_color="#00B0F0")
         label_name.place(x=10, y=40)
 
         label_account = ctk.CTkLabel(master=self.janela, text=f"Conta: {self.conta.numero}",
-                                     font=("Times New Roman", 20), text_color="#00B0F0")
-        label_account.place(x=400, y=80)
+                                     font=("ARIAL", 20,"bold"), text_color="#00B0F0")
+        label_account.place(x=357, y=80)
 
-        label_balance_title = ctk.CTkLabel(master=self.janela, text="SALDO ATUAL",
-                                           font=("Times New Roman", 20), text_color="#00B0F0")
+        label_balance_title = ctk.CTkLabel(master=self.janela, text="SALDO ATUAL: ",
+                                           font=("ARIAL", 20,"bold"), text_color="#00B0F0")
         label_balance_title.place(x=10, y=80)
 
         if self.conta.saldo >= 100:
             label_balance = ctk.CTkLabel(master=self.janela, text=f"R$ {self.conta.saldo:.2f}",
-                                         font=("Times New Roman", 30), text_color="#00B0F0")
+                                         font=("ARIAL", 30,"bold"), text_color="green")
         else:
             label_balance = ctk.CTkLabel(master=self.janela, text=f"R$ {self.conta.saldo:.2f}",
-                                         font=("Times New Roman", 30), text_color="red")
+                                         font=("ARIAL", 30,"bold"), text_color="red")
 
         label_balance.place(x=160, y=72)
 
@@ -209,44 +209,43 @@ class Sistema(pessoa):
                 border_color=cor_borda, width=300, height=200
             )
             
-            # Rótulo do Título com largura fixa
             titulo_label = ctk.CTkLabel(
                 card_frame, text=titulo, font=("Arial", 14, "bold"), fg_color='transparent', 
                 text_color="white", wraplength=260, anchor='center', justify="center", width=260
             )
-            titulo_label.place(relx=0.5, rely=0.2, anchor='center')  # Posicionamento relativo dentro do card
+            titulo_label.place(relx=0.5, rely=0.2, anchor='center')  
 
-            # Rótulo de Descrição com largura fixa
             descricao_label = ctk.CTkLabel(
                 card_frame, text=descricao, font=("Arial", 11), text_color="white", 
                 wraplength=260, justify="center", width=260
             )
-            descricao_label.place(relx=0.5, rely=0.5, anchor='center')  # Posicionamento relativo dentro do card
+            descricao_label.place(relx=0.5, rely=0.5, anchor='center')  
 
-            # Botão ajustado para um estilo mais flat e responsivo
             botao = ctk.CTkButton(
-                card_frame, text=texto_botao, font=("Arial", 12, "bold"), command=comando_botao, 
-                fg_color='#00A2E8', hover_color='#007ACC', corner_radius=8, text_color='white'
+            card_frame, text=texto_botao, font=("Arial", 14, "bold"), command=comando_botao, 
+            fg_color='#00A2E8', hover_color='#007ACC', corner_radius=8, text_color='white',
+            width=150, height=40  # Aumentando a largura e altura do botão
             )
             botao.place(relx=0.5, rely=0.8, anchor='center')  # Posicionamento relativo dentro do card
 
             return card_frame
 
 
+
         # Criando frames específicos para cada card
         frame_card1 = ctk.CTkFrame(self.frame_inicio, width=220, height=240, fg_color="transparent")
-        frame_card1.place(x=20, y=50)
+        frame_card1.place(x=10, y=50)
         card1 = criar_card(frame_card1, 'transparent', '#00569D', 'Realize um \n Depósito na sua conta.', comando_botao=self.depositar, descricao='Deposite dinheiro na sua conta para\n aumentar o saldo disponível.', texto_botao='DEPOSITAR')
         card1.place(relx=0.5, rely=0.5, anchor='center')  # Posicionando o card dentro do frame
         
         
         frame_card2 = ctk.CTkFrame(self.frame_inicio, width=220, height=240, fg_color="transparent")
-        frame_card2.place(x=225, y=50)
+        frame_card2.place(x=215, y=50)
         card2 = criar_card(frame_card2, 'transparent', '#00569D', 'Realize um\n saque na sua Conta.', comando_botao=self.sacar, descricao='Saque dinheiro da sua conta,\n reduzindo o saldo atual.', texto_botao='SACAR')
         card2.place(relx=0.5, rely=0.5, anchor='center') 
 
         frame_card3 = ctk.CTkFrame(self.frame_inicio, width=220, height=240, fg_color="transparent")
-        frame_card3.place(x=420, y=50)
+        frame_card3.place(x=412, y=50)
         card3 = criar_card(frame_card3, 'transparent', '#00569D', 'Consulte o seu\n Extrato \nde Transações.', comando_botao=self.mostrar_extrato, descricao='Visualize todas as transações\n realizadas na sua conta.', texto_botao='EXTRATO')
         card3.place(relx=0.5, rely=0.5, anchor='center')
     
@@ -271,14 +270,14 @@ class Sistema(pessoa):
         janela_transferencia.title("Transferência")
         janela_transferencia.geometry("300x400")
 
-        # Label e entrada para o número da conta de destino
+
         label_conta = ctk.CTkLabel(janela_transferencia, text_color='black', text="Número da Conta de Destino:", font=("Arial", 12))
         label_conta.pack(pady=(20, 5))
 
         entry_conta = ctk.CTkEntry(janela_transferencia, placeholder_text="Conta: ", font=("Roboto", 14), width=200)
         entry_conta.pack(pady=(0, 10))
 
-        # Label e entrada para o valor de transferência
+        
         label_valor = ctk.CTkLabel(janela_transferencia, text_color='black', text="Valor da Transferência (R$):", font=("Arial", 12))
         label_valor.pack(pady=(10, 5))
 
