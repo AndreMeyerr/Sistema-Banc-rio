@@ -9,7 +9,7 @@ def criar_tabelas():
     conn = conectar()
     cursor = conn.cursor()
 
-    # Comando para criar a tabela 'Customers' com todas as colunas
+    # Criar a tabela Customers se não existir
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Customers(
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,7 +20,12 @@ def criar_tabelas():
         Password TEXT NOT NULL
     )
     """)
-
+    cursor.execute("PRAGMA table_info(Customers)")
+    colunas = [coluna[1] for coluna in cursor.fetchall()]
+    if 'is_admin' not in colunas:
+        cursor.execute("ALTER TABLE Customers ADD COLUMN is_admin INTEGER DEFAULT 0")
+        print("Coluna 'is_admin' adicionada à tabela 'Customers'.")
+    
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Contas (
         NumberAccount INTEGER PRIMARY KEY,
@@ -83,21 +88,19 @@ def cadastrar_usuario(name, cpf, idade, email, password):
 def verificar_login_nome_saldo_conta(cpf, password):
     conn = conectar()
     cursor = conn.cursor()
-    
-    # Selecione o nome do cliente junto com a verificação do CPF e da senha
-    cursor.execute("""SELECT ct.Name, C.Balance,C.NumberAccount,ct.Email,ct.CPF,ct.Password
-                        FROM Customers ct
-                        JOIN Contas C
-                        ON ct.CPF = C.CPF
-                        WHERE ct.CPF = ? AND ct.Password = ?;""", (cpf, password))
-    
+
+    cursor.execute("""SELECT ct.Name, C.Balance, C.NumberAccount, ct.Email, ct.CPF, ct.Password, ct.is_admin
+                      FROM Customers ct
+                      LEFT JOIN Contas C ON ct.CPF = C.CPF
+                      WHERE ct.CPF = ? AND ct.Password = ?;""", (cpf, password))
+
     resultado = cursor.fetchone()
-    
     conn.close()
-    
+
     if resultado:
         return resultado
     return None
+
  
 
 
@@ -229,4 +232,23 @@ def ver_estrutura_tabela(nome_tabela):
     finally:
         conn.close()
 
+def criar_usuario_admin():
+    conn = conectar()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+        INSERT INTO Customers (Name, CPF, Idade, Email, Password, is_admin)
+        VALUES (?, ?, ?, ?, ?, 1)
+        """, ("Administrador", "00000000000", 30, "admin@example.com", "admin123"))
+        conn.commit()
+        print("Usuário administrador criado com sucesso!")
+    except sqlite3.Error as e:
+        print(f"Erro ao criar administrador: {e}")
+    finally:
+        conn.close()
+
 checar_database()
+
+
+

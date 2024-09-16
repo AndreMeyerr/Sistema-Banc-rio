@@ -11,6 +11,17 @@ class Application():
         self.janela = ctk.CTk()
         self.tema()
         self.tela()
+
+        # Carregar e redimensionar a imagem apenas uma vez
+        try:
+            imagem_original = Image.open("Logo_banco 1.png")
+            imagem_redimensionada = imagem_original.resize((350, 350))
+            self.img = ImageTk.PhotoImage(imagem_redimensionada)
+            self.Label_img = ctk.CTkLabel(master=self.janela, image=self.img, text=None)
+            self.Label_img.pack(side='left', fill='y')
+        except Exception as e:
+            print(f"Erro ao carregar a imagem: {e}")
+
         self.tela_login()
         self.janela.mainloop()
 
@@ -24,21 +35,6 @@ class Application():
         self.janela.resizable(False, False)
 
     def tela_login(self):
-        # Carregar e redimensionar a imagem usando PIL
-        try:
-            imagem_original = Image.open("Imagem Teste 1.png")
-            imagem_redimensionada = imagem_original.resize((350, 380))
-
-           
-            self.img = ImageTk.PhotoImage(imagem_redimensionada)
-            
-            
-            Label_img = ctk.CTkLabel(master=self.janela, image=self.img, text=None)
-            Label_img.pack(side='left', fill='y')
-        except Exception as e:
-            print(f"Erro ao carregar a imagem: {e}")
-
-
         # Login frame
         self.login_frame = ctk.CTkFrame(master=self.janela, width=350, height=396)
         self.login_frame.pack(side=RIGHT,fill='y')
@@ -88,16 +84,22 @@ class Application():
         password = self.password_entry.get()
 
         nome_saldo_conta_logado = verificar_login_nome_saldo_conta(cpf, password)
-        
+
         if nome_saldo_conta_logado:
-            messagebox.showinfo(title="Situação de Login", message='Login Feito com Sucesso!')
-            self.janela.destroy()
-            from app import Sistema
-            Sistema(nome_saldo_conta_logado[0],nome_saldo_conta_logado[1],nome_saldo_conta_logado[2],nome_saldo_conta_logado[3],nome_saldo_conta_logado[4],nome_saldo_conta_logado[5])  # Inicia o sistema passando o nome e saldo do usuário
-  
-              
+            is_admin = nome_saldo_conta_logado[6]  # Novo campo is_admin
+            if is_admin:
+                messagebox.showinfo(title="Situação de Login", message='Login de Administrador Feito com Sucesso!')
+                self.janela.destroy()
+                from admin import AdminInterface
+                AdminInterface()
+            else:
+                messagebox.showinfo(title="Situação de Login", message='Login Feito com Sucesso!')
+                self.janela.destroy()
+                from app import Sistema
+                Sistema(*nome_saldo_conta_logado[:6])
         else:
             messagebox.showerror(title="Erro", message="Nome de usuário ou senha incorretos.")
+
 
     def formatar_data_nascimento(self, event):
     # Pega o conteúdo atual da entrada
@@ -123,7 +125,6 @@ class Application():
 
 
     def tela_register(self):
-        # Remover o frame de Login e adicionando frame de Registro
         self.login_frame.pack_forget()
         self.rg_frame = ctk.CTkFrame(master=self.janela, width=350, height=396)
         self.rg_frame.pack(side=RIGHT)
@@ -240,7 +241,8 @@ class Application():
 
     def back_to_login(self):
         self.rg_frame.pack_forget()
-        self.tela_login()
+        self.login_frame.pack(side=RIGHT, fill='y')
+
 
 
 
