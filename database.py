@@ -9,7 +9,6 @@ def criar_tabelas():
     conn = conectar()
     cursor = conn.cursor()
 
-    # Criar a tabela Customers se não existir
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Customers(
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -53,7 +52,7 @@ def criar_tabelas():
 def gerar_numero_conta():
     return random.randint(1000, 9999)
 
-# Cria a nova tabela
+
 criar_tabelas()
 
 def cadastrar_usuario(name, cpf, idade, email, password):
@@ -75,11 +74,11 @@ def cadastrar_usuario(name, cpf, idade, email, password):
         # Confirmar transação
         conn.commit()
         print(f"Usuário {name} cadastrado com sucesso! Número da conta: {numero_conta}")
-        return True  # Retorna True se o cadastro foi bem-sucedido
+        return True  
     except sqlite3.Error as e:
         conn.rollback()
         print(f"Erro ao cadastrar usuário: {e}")
-        return False  # Retorna False se houve algum erro
+        return False  
     finally:
         conn.close()
 
@@ -103,37 +102,13 @@ def verificar_login_nome_saldo_conta(cpf, password):
 
  
 
-
-#def verificar_login_saldo(cpf, password):
-    conn = conectar()
-    cursor = conn.cursor()
-    
-    # Selecione o nome do cliente junto com a verificação do CPF e da senha
-    cursor.execute("""SELECT ct.CPF,  C.Balance
-                        FROM Customers ct
-                        JOIN Contas C
-                        ON ct.CPF = C.CPF;
-                        """, (cpf, password))
-    resultado = cursor.fetchone()
-    
-    conn.close()
-    
-    if resultado:
-        return resultado  
-    return None  
-
-
 def ver_estrutura_tabela():
     conn = conectar()
     cursor = conn.cursor()
     
-    # Comando para ver a estrutura da tabela Customers
+  
     cursor.execute("PRAGMA table_info(Contas)")
-    
-    # Recupera todas as linhas da consulta
     colunas = cursor.fetchall()
-    
-    # Exibe as colunas com seus detalhes
     for coluna in colunas:
         print(coluna)
     
@@ -144,7 +119,6 @@ def excluir_usuario(cpf):
     cursor = conn.cursor()
     
     try:
-        # Comando SQL para excluir o registro onde o CPF corresponde
         cursor.execute("DELETE FROM Customers WHERE CPF = ?", (cpf,))
         conn.commit()
         print(f"Usuário com CPF {cpf} foi excluído.")
@@ -159,11 +133,8 @@ def checar_database():
     cursor = conn.cursor()
     
     try:
-        # Executa a consulta para selecionar todos os registros
-        cursor.execute('SELECT * FROM Contas')
+        cursor.execute('SELECT * FROM Customers')
         consulta = cursor.fetchall()
-        
-        # Imprime os registros
         for registro in consulta:
             print(registro)
     except sqlite3.Error as e:
@@ -213,7 +184,7 @@ def limpar_tabelas():
     finally:
         conn.close()
 
-# Executa a função para limpar os dados das tabelas
+
 
 def ver_estrutura_tabela(nome_tabela):
     conn = conectar()

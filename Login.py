@@ -11,8 +11,6 @@ class Application():
         self.janela = ctk.CTk()
         self.tema()
         self.tela()
-
-        # Carregar e redimensionar a imagem apenas uma vez
         try:
             imagem_original = Image.open("Logo_banco 1.png")
             imagem_redimensionada = imagem_original.resize((350, 350))
@@ -35,7 +33,6 @@ class Application():
         self.janela.resizable(False, False)
 
     def tela_login(self):
-        # Login frame
         self.login_frame = ctk.CTkFrame(master=self.janela, width=350, height=396)
         self.login_frame.pack(side=RIGHT,fill='y')
 
@@ -45,14 +42,14 @@ class Application():
 
         # Frame widgets
         label = ctk.CTkLabel(master=self.login_frame, text="Sistema de Login", font=("Roboto", 30))
-        label.place(x=25, y=5)
+        label.place(x=60, y=5)
 
         self.cpf_entry = ctk.CTkEntry(master=self.login_frame, placeholder_text="CPF: ",
                                       width=300, font=("Roboto", 14))
         self.cpf_entry.place(x=25, y=105)
         cpf_label = ctk.CTkLabel(master=self.login_frame,
                                       text="O Campo CPF do Usuário é de caráter Obrigatório.",
-                                      text_color="green", font=("Roboto", 8))
+                                      text_color="green", font=("Roboto", 12))
         cpf_label.place(x=25, y=135)
 
         self.password_entry = ctk.CTkEntry(master=self.login_frame, placeholder_text="Senha do Usuário:",
@@ -60,18 +57,18 @@ class Application():
         self.password_entry.place(x=25, y=175)
         password_label = ctk.CTkLabel(master=self.login_frame,
                                       text="O Campo Senha do Usuário é de caráter Obrigatório.",
-                                      text_color="green", font=("Roboto", 8))
+                                      text_color="green", font=("Roboto", 12))
         password_label.place(x=25, y=205)
 
         remember_password_checkbox = ctk.CTkCheckBox(master=self.login_frame, text="Manter-me Conectado")
         remember_password_checkbox.place(x=25, y=235)
 
-        # Login Button
+
         login_button = ctk.CTkButton(master=self.login_frame, text="LOGIN", fg_color="#006494",
                                      command=self.login_user, width=300)
         login_button.place(x=25, y=275)
 
-        # Register option
+
         choice_register_span = ctk.CTkLabel(master=self.login_frame, text="Se Não Possuir Uma Conta -> ")
         choice_register_span.place(x=25, y=310)
 
@@ -86,7 +83,7 @@ class Application():
         nome_saldo_conta_logado = verificar_login_nome_saldo_conta(cpf, password)
 
         if nome_saldo_conta_logado:
-            is_admin = nome_saldo_conta_logado[6]  # Novo campo is_admin
+            is_admin = nome_saldo_conta_logado[6] 
             if is_admin:
                 messagebox.showinfo(title="Situação de Login", message='Login de Administrador Feito com Sucesso!')
                 self.janela.destroy()
@@ -102,23 +99,23 @@ class Application():
 
 
     def formatar_data_nascimento(self, event):
-    # Pega o conteúdo atual da entrada
         text = self.data_nascimento_entry.get()
 
-        # Remove qualquer caractere que não seja número
+      
         text = ''.join([char for char in text if char.isdigit()])
 
-        # Formata automaticamente a data quando o comprimento é suficiente
+       
         if len(text) >= 2 and len(text) <= 4:
             text = text[:2] + '/' + text[2:]
         elif len(text) > 4:
             text = text[:2] + '/' + text[2:4] + '/' + text[4:8]
         
-        # Atualiza o conteúdo da entry
+        
         self.data_nascimento_entry.delete(0, 'end')
         self.data_nascimento_entry.insert(0, text)
 
-        # Limita o tamanho a 10 caracteres (dd/mm/yyyy)
+       
+
         if len(text) > 10:
             self.data_nascimento_entry.delete(10, 'end')
 
@@ -160,12 +157,12 @@ class Application():
         terms_checkbox = ctk.CTkCheckBox(master=self.rg_frame, text="Concordo com os Termos e Políticas")
         terms_checkbox.place(x=25, y=275)
 
-        # Register Button
+        
         register_button = ctk.CTkButton(master=self.rg_frame, text="REGISTRAR", command=self.register_user,
                                         fg_color="green", hover_color="#014B05", width=300)
         register_button.place(x=25, y=310)
 
-        # Back Button
+      
         back_button = ctk.CTkButton(master=self.rg_frame, text="Voltar", fg_color="gray", hover_color="#404143",
                                     width=100, command=self.back_to_login)
         back_button.place(x=25, y=350)
@@ -218,7 +215,7 @@ class Application():
             messagebox.showerror(title="Erro", message="O nome deve ter pelo menos 3 caracteres e não deve conter números ou caracteres especiais.")
             return
         age = self.is_valid_age(date_of_birth)
-        if age is False:  # Se a idade não for válida
+        if age is False:  
             return
         if not self.is_valid_email(email):
             messagebox.showerror(title="Erro", message="Email inválido.")
@@ -241,10 +238,11 @@ class Application():
 
     def back_to_login(self):
         self.rg_frame.pack_forget()
-        self.login_frame.pack(side=RIGHT, fill='y')
+        self.tela_login()
 
 
 
 
-# Executa a aplicação
+
+
 Application()

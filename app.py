@@ -52,7 +52,7 @@ class Conta:
             self.registrar_transacao('SAQUE', -valor)
             return f'Saque de R${valor:.2f} realizado com sucesso! Saldo atual: R${self.saldo:.2f}'
     def transferir(self, numero_conta_destino, valor):
-        # Converte o valor para float e verifica se é válido
+        
         try:
             valor = float(valor)
             if valor <= 0:
@@ -60,11 +60,11 @@ class Conta:
         except ValueError:
             return "Valor de transferência inválido."
 
-        # Verifica se há saldo suficiente para a transferência
+        # Verificando se há saldo suficiente para a transferência
         if self.saldo < valor:
             return "Saldo insuficiente para realizar a transferência."
 
-        # Verifica se a conta de destino existe
+        # Verificando se a conta de destino existe
         conn = conectar()
         cursor = conn.cursor()
         cursor.execute("SELECT Balance FROM Contas WHERE NumberAccount = ?", (numero_conta_destino,))
@@ -74,21 +74,21 @@ class Conta:
             conn.close()
             return "Conta de destino não encontrada."
 
-        # Obtém o saldo da conta de destino
+        # Obtendo o saldo da conta de destino
         saldo_destino = resultado[0]
 
         try:
-            # Atualiza o saldo da conta de origem
+            # Atualizando o saldo da conta de origem
             self.saldo -= valor
             atualizar_saldo_db(self.numero, self.saldo)
             self.registrar_transacao('TRANSFERÊNCIA ENVIADA', -valor)
 
-            # Atualiza o saldo da conta de destino
+            # Atualizando o saldo da conta de destino
             saldo_destino += valor
             cursor.execute("UPDATE Contas SET Balance = ? WHERE NumberAccount = ?", (saldo_destino, numero_conta_destino))
             conn.commit()
 
-            # Registra a transação na conta de destino
+            # Registrando a transação na conta de destino
             cursor.execute("""
             INSERT INTO Transacoes (numero_conta, tipo, valor)
             VALUES (?, 'TRANSFERÊNCIA RECEBIDA', ?)
@@ -221,12 +221,10 @@ class Sistema(pessoa):
             )
             descricao_label.place(relx=0.5, rely=0.5, anchor='center')  
 
-            botao = ctk.CTkButton(
-            card_frame, text=texto_botao, font=("Arial", 14, "bold"), command=comando_botao, 
+            botao = ctk.CTkButton(card_frame, text=texto_botao, font=("Arial", 14, "bold"), command=comando_botao, 
             fg_color='#00A2E8', hover_color='#007ACC', corner_radius=8, text_color='white',
-            width=150, height=40  # Aumentando a largura e altura do botão
-            )
-            botao.place(relx=0.5, rely=0.8, anchor='center')  # Posicionamento relativo dentro do card
+            width=150, height=40)
+            botao.place(relx=0.5, rely=0.8, anchor='center')
 
             return card_frame
 
@@ -265,7 +263,7 @@ class Sistema(pessoa):
             self.atualizar_saldo()
             self.tela_inicio()
     def transferir(self):
-        # Criação de uma nova janela de diálogo
+        #Janela de Transfer
         janela_transferencia = Toplevel(self.janela)
         janela_transferencia.title("Transferência")
         janela_transferencia.geometry("300x400")
@@ -284,18 +282,14 @@ class Sistema(pessoa):
         entry_valor = ctk.CTkEntry(janela_transferencia, placeholder_text="Valor R$: ", font=("Roboto", 14), width=200)
         entry_valor.pack(pady=(0, 20))
 
-        # Função interna para capturar os dados de entrada e executar a transferência
+        
         def executar_transferencia():
             numero_conta_destino = entry_conta.get()
             valor_transferencia = entry_valor.get()
 
-            # Chama o método de transferência da classe Conta
+            # Chamando método de transferência da classe Conta
             resultado = self.conta.transferir(numero_conta_destino, valor_transferencia)
-            
-            # Exibe o resultado da operação
             messagebox.showinfo("Resultado da Transferência", resultado)
-            
-            # Fecha a janela de transferência após o sucesso
             janela_transferencia.destroy()
             self.atualizar_saldo()
             self.tela_inicio()
@@ -315,13 +309,10 @@ class Sistema(pessoa):
 
 
     def tela_conta(self):
-        # Esconder ou destruir o frame anterior
-        self.frame_inicio.pack_forget()  # Esconde o frame anterior
-
+        self.frame_inicio.pack_forget()  # 
         self.conta_frame = ctk.CTkFrame(master=self.janela, width=700, height=350)
         self.conta_frame.pack(side=BOTTOM)
 
-        # Botão para voltar ao início
         btn_inicio = ctk.CTkButton(master=self.conta_frame, text='INÍCIO',
                                     fg_color="#004B57", font=("Times New Roman", 20),
                                     command=self.back_to_inicio)
@@ -338,7 +329,7 @@ class Sistema(pessoa):
                                     fg_color="#7BB4E3", font=("Times New Roman", 20))
         btn_conta.place(x=450, y=20)
 
-        # Exibir dados da conta como exemplo
+        # Exibindo dados da conta
         label_name = ctk.CTkLabel(master=self.conta_frame, text=f"Nome: {self.nome}",
                                     font=("Times New Roman", 20), text_color="#00B0F0")
         label_name.place(x=50, y=80)
@@ -389,14 +380,11 @@ class Sistema(pessoa):
         try:
             with conectar() as conn:
                 cursor = conn.cursor()
-                
-                # Excluir todas as transações associadas ao usuário
+                # Excluindo todas as transações associadas ao usuário
                 cursor.execute("DELETE FROM Transacoes WHERE numero_conta IN (SELECT NumberAccount FROM Contas WHERE CPF = ?)", (cpf,))
-                
-                # Excluir todas as contas associadas ao usuário
+                # Excluindo todas as contas associadas ao usuário
                 cursor.execute("DELETE FROM Contas WHERE CPF = ?", (cpf,))
-                
-                # Excluir o próprio usuário
+                # Excluindo o próprio usuário
                 cursor.execute("DELETE FROM Customers WHERE CPF = ?", (cpf,))
                 
                 conn.commit()
@@ -410,16 +398,16 @@ class Sistema(pessoa):
         if self.saldo > 0:
             resposta = messagebox.askyesno("Aviso", "A conta ainda possui saldo. Você tem certeza que deseja excluí-la?")
             if resposta:
-                self.excluir_usuario(cpf)  # Chama a função de exclusão
+                self.excluir_usuario(cpf)   
                 messagebox.showinfo("Sucesso", "Conta excluída com sucesso.")
-                self.janela.destroy()  # Fecha a janela atual
+                self.janela.destroy()  
                 self.voltar_para_login()
             else:
                 messagebox.showinfo("Cancelado", "A exclusão da conta foi cancelada.")
         else:
-            self.excluir_usuario(cpf)  # Exclui se não houver saldo
+            self.excluir_usuario(cpf)  
             messagebox.showinfo("Sucesso", "Conta excluída com sucesso.")
-            self.janela.destroy()  # Fecha a janela atual
+            self.janela.destroy()  
             self.voltar_para_login()
             
     def voltar_para_login(self):
@@ -431,33 +419,28 @@ class Sistema(pessoa):
         # Criar uma nova janela (janela de diálogo)
         janela_atualizacao = Toplevel(self.janela)
         janela_atualizacao.title("Atualizar Dados")
-        janela_atualizacao.geometry("400x250")  # Aumenta o tamanho da janela
+        janela_atualizacao.geometry("400x250")  
         
-        # Label explicativa
+        
         label = ctk.CTkLabel(master=janela_atualizacao, text="Escolha o dado que deseja atualizar:",
-                            font=("Arial", 14), text_color='black')  # Aumenta o tamanho da fonte
-        label.pack(pady=20)  # Aumenta o espaçamento vertical para 20
-
-        # Criação da Combobox com tamanho de fonte ajustado
+                            font=("Arial", 14), text_color='black')  
+        label.pack(pady=20)  
         self.opcao_atualizacao = StringVar()
         combobox = ttk.Combobox(janela_atualizacao, textvariable=self.opcao_atualizacao, 
                                 values=["Nome", "E-mail", "Senha"], state="readonly", font=("Arial", 12))  # Define o tamanho da fonte
-        combobox.set("Selecione uma opção")  # Placeholder padrão
-        combobox.pack(pady=20, padx=10, ipadx=10, ipady=5)  # Aumenta o espaçamento e o preenchimento
+        combobox.set("Selecione uma opção")  
+        combobox.pack(pady=20, padx=10, ipadx=10, ipady=5)
 
-        # Botão para confirmar a escolha
+       
         confirmar_button = ctk.CTkButton(master=janela_atualizacao, text="Confirmar", 
                                         command=lambda: self.confirmar_atualizacao(janela_atualizacao))
-        confirmar_button.pack(pady=20)  # Aumenta o espaçamento vertical para 20
+        confirmar_button.pack(pady=20)  
 
     def confirmar_atualizacao(self, janela_atualizacao):
         opcao = self.opcao_atualizacao.get().lower()
 
         if opcao in ["nome", "e-mail", "senha"]:
-            # Fechar a janela de escolha
             janela_atualizacao.destroy()
-
-            # Abrir um novo diálogo para pedir o novo valor
             novo_valor = simpledialog.askstring("Novo Valor", f"Informe o novo valor para {opcao.capitalize()}:")
             if novo_valor:
                 self.atualizar_dado(opcao, novo_valor)
@@ -471,8 +454,6 @@ class Sistema(pessoa):
     def atualizar_dado(self, campo, valor):
         conn = conectar()  # Função que conecta ao banco de dados
         cursor = conn.cursor()
-
-        # Define o campo a ser atualizado
         if campo == "nome":
             cursor.execute("UPDATE Customers SET Name = ? WHERE CPF = ?", (valor, self.cpf))
             self.nome = valor  # Atualiza o atributo no sistema também
@@ -518,4 +499,4 @@ def verificar_login(cpf, password):
 
 
 
-verificar_login("03868304100","fama1234",)
+#verificar_login("03868304100","fama1234",)
