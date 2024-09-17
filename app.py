@@ -499,4 +499,3 @@ def verificar_login(cpf, password):
 
 
 
-#verificar_login("03868304100","fama1234",)
